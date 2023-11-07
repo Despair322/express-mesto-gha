@@ -1,9 +1,9 @@
 const CardModel = require('../models/card');
 
 const createCard = (req, res) => {
-  const id = req.user._id;
+  const owner = req.user._id;
   const cardData = req.body;
-  CardModel.create({ ...cardData, owner: id }, { runValidators: true })
+  CardModel.create({ ...cardData, owner })
     .then((data) => res.status(201).send(data))
     .catch((err) => {
       if (err.name === 'ValidationError') {

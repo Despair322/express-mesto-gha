@@ -4,7 +4,6 @@ const appRouter = require('./routes');
 
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
   useNewUrlParser: true,
-  //useFindAndModify: false,
 }).then(() => {
   console.log('Connected to MongoDB');
 });
