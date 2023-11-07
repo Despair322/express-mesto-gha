@@ -2,7 +2,11 @@ const express = require('express');
 const mongoose = require('mongoose');
 const appRouter = require('./routes');
 
-mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {}).then(() => {
+mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  useFindAndModify: false,
+}).then(() => {
   console.log('Connected to MongoDB');
 });
 
