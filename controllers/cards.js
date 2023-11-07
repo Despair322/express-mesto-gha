@@ -21,12 +21,13 @@ const getCards = (req, res) => {
 
 const deleteCard = (req, res) => {
   const { cardId } = req.params;
+  console.log(cardId);
   CardModel.findByIdAndDelete(cardId)
     .then((card) => {
       if (!card) {
         return res.status(404).send({ message: 'Card not found' });
       }
-      return res.status(204);
+      return res.status(200).send({ message: 'Card deleted' });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
