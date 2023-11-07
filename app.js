@@ -1,11 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const appRouter = require('./routes');
+const bodyParser = require('body-parser');
 
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
   useNewUrlParser: true,
-  useCreateIndex: true,
-  useFindAndModify: false,
 }).then(() => {
   console.log('Connected to MongoDB');
 });
@@ -19,7 +18,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.json());
+app.use(bodyParser.json());
 
 app.use(appRouter);
 
