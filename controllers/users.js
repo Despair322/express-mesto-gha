@@ -44,7 +44,7 @@ const updateUserById = (req, res) => {
       if (!user) {
         return res.status(404).send({ message: 'User not found' });
       }
-      return res.status(201).send(user);
+      return res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -65,7 +65,7 @@ const updateAvatar = (req, res) => {
       if (!user) {
         return res.status(404).send({ message: 'User not found' });
       }
-      return res.status(201).send(user);
+      return res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {

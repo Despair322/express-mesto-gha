@@ -3,7 +3,7 @@ const CardModel = require('../models/card');
 const createCard = (req, res) => {
   const id = req.user._id;
   const cardData = req.body;
-  CardModel.create({ ...cardData, owner: id })
+  CardModel.create({ ...cardData, owner: id }, { runValidators: true })
     .then((data) => res.status(201).send(data))
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -44,7 +44,7 @@ const likeCard = (req, res) => {
       if (!card) {
         return res.status(404).send({ message: 'Card not found' });
       }
-      return res.status(202).send(card);
+      return res.status(201).send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
@@ -62,7 +62,7 @@ const dislikeCard = (req, res) => {
       if (!card) {
         return res.status(404).send({ message: 'Card not found' });
       }
-      return res.status(202).send(card);
+      return res.status(200).send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
