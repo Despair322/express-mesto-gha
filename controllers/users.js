@@ -14,7 +14,7 @@ const createUser = (req, res) => {
 
 const getUsers = (req, res) => {
   UserModel.find()
-    .then((users) => res.status(200).send(users))
+    .then((users) => res.send(users))
     .catch((err) => res.status(500).send({ message: `Server Error + ${err}` }));
 };
 
@@ -22,13 +22,12 @@ const getUserById = (req, res) => {
   const { id } = req.params;
 
   UserModel.findById(id)
-    .then((user) => {
-      if (!user) {
-        return res.status(404).send({ message: 'User not found' });
-      }
-      return res.status(200).send(user);
-    })
+    .orFail(new Error('User not found'))
+    .then((user) => res.send(user))
     .catch((err) => {
+      if (err.message === 'User not found') {
+        return res.status(404).send({ message: err.message });
+      }
       if (err.name === 'CastError') {
         return res.status(400).send({ message: 'Invalid ID' });
       }
@@ -40,13 +39,12 @@ const updateUserById = (req, res) => {
   const id = req.user._id;
   const { name, about } = req.body;
   UserModel.findByIdAndUpdate(id, { name, about }, { new: true, runValidators: true })
-    .then((user) => {
-      if (!user) {
-        return res.status(404).send({ message: 'User not found' });
-      }
-      return res.status(200).send(user);
-    })
+    .orFail(new Error('User not found'))
+    .then((user) => res.send(user))
     .catch((err) => {
+      if (err.message === 'User not found') {
+        return res.status(404).send({ message: err.message });
+      }
       if (err.name === 'CastError') {
         return res.status(400).send({ message: 'Invalid ID' });
       }
@@ -61,13 +59,12 @@ const updateAvatar = (req, res) => {
   const id = req.user._id;
   const { avatar } = req.body;
   UserModel.findByIdAndUpdate(id, { avatar }, { new: true, runValidators: true })
-    .then((user) => {
-      if (!user) {
-        return res.status(404).send({ message: 'User not found' });
-      }
-      return res.status(200).send(user);
-    })
+    .orFail(new Error('User not found'))
+    .then((user) => res.send(user))
     .catch((err) => {
+      if (err.message === 'User not found') {
+        return res.status(404).send({ message: err.message });
+      }
       if (err.name === 'CastError') {
         return res.status(400).send({ message: 'Invalid ID' });
       }

@@ -15,7 +15,7 @@ const createCard = (req, res) => {
 
 const getCards = (req, res) => {
   CardModel.find()
-    .then((cards) => res.status(200).send(cards))
+    .then((cards) => res.send(cards))
     .catch((err) => res.status(500).send({ message: `Server Error + ${err}` }));
 };
 
@@ -23,13 +23,12 @@ const deleteCard = (req, res) => {
   const { cardId } = req.params;
   console.log(cardId);
   CardModel.findByIdAndDelete(cardId)
-    .then((card) => {
-      if (!card) {
-        return res.status(404).send({ message: 'Card not found' });
-      }
-      return res.status(200).send({ message: 'Card deleted' });
-    })
+    .orFail(new Error('Card not found'))
+    .then((card) => res.send(card))
     .catch((err) => {
+      if (err.message === 'Card not found') {
+        return res.status(404).send({ message: err.message });
+      }
       if (err.name === 'CastError') {
         return res.status(400).send({ message: 'Invalid ID' });
       }
@@ -41,13 +40,12 @@ const likeCard = (req, res) => {
   const { cardId } = req.params;
   const id = req.user._id;
   CardModel.findByIdAndUpdate(cardId, { $addToSet: { likes: id } }, { new: true })
-    .then((card) => {
-      if (!card) {
-        return res.status(404).send({ message: 'Card not found' });
-      }
-      return res.status(201).send(card);
-    })
+    .orFail(new Error('Card not found'))
+    .then((card) => res.status(201).send(card))
     .catch((err) => {
+      if (err.message === 'Card not found') {
+        return res.status(404).send({ message: err.message });
+      }
       if (err.name === 'CastError') {
         return res.status(400).send({ message: 'Invalid ID' });
       }
@@ -59,13 +57,12 @@ const dislikeCard = (req, res) => {
   const { cardId } = req.params;
   const id = req.user._id;
   CardModel.findByIdAndUpdate(cardId, { $pull: { likes: id } }, { new: true })
-    .then((card) => {
-      if (!card) {
-        return res.status(404).send({ message: 'Card not found' });
-      }
-      return res.status(200).send(card);
-    })
+    .orFail(new Error('Card not found'))
+    .then((card) => res.send(card))
     .catch((err) => {
+      if (err.message === 'Card not found') {
+        return res.status(404).send({ message: err.message });
+      }
       if (err.name === 'CastError') {
         return res.status(400).send({ message: 'Invalid ID' });
       }
