@@ -2,7 +2,6 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const UserModel = require('../models/user');
 const BadRequestError = require('../errors/bad-request-error');
-const ForbiddenError = require('../errors/forbidden-error');
 const ConflictError = require('../errors/conflict-error');
 const UnathorizedError = require('../errors/unathorized-error');
 
@@ -18,7 +17,7 @@ const login = (req, res, next) => {
   UserModel.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        return next(new ForbiddenError('Такого пользователя не существует'));
+        return next(new UnathorizedError('Такого пользователя не существует'));
       }
       bcrypt.compare(password, user.password, (err, isValidPassword) => {
         if (!isValidPassword) {
@@ -43,7 +42,7 @@ const createUser = (req, res, next) => {
   }
   bcrypt.hash(userData.password, SALT_ROUNDS)
     .then((hash) => UserModel.create({ ...userData, password: hash }))
-    .then(({ _id }) => res.status(201).send({ id: _id }))
+    .then((user) => res.status(201).send(user))
     .catch((err) => {
       if (err.code === 11000) {
         return next(new ConflictError('Такой пользователь уже существует'));
