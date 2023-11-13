@@ -28,7 +28,7 @@ const deleteCard = (req, res, next) => {
   CardModel.findById(cardId)
     .orFail(() => next(new NotFoundError('Карточка не найдена')))
     .then((card) => {
-      if (card.owner.toString() !== owner) {
+      if (card.owner.toString() !== owner.toString()) {
         return next(new ForbiddenError('Попытка удаления чужой карточки'));
       }
       CardModel.findByIdAndDelete(cardId)
