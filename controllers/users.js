@@ -1,83 +1,77 @@
 const UserModel = require('../models/user');
+const NotFoundError = require('../errors/not-found-error');
+const BadRequestError = require('../errors/bad-request-error');
 
-const createUser = (req, res) => {
-  const userData = req.body;
-  return UserModel.create(userData)
-    .then((data) => res.status(201).send(data))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: err.message });
-      }
-      return res.status(500).send({ message: 'Server Error' });
-    });
-};
-
-const getUsers = (req, res) => {
+const getUsers = (req, res, next) => {
   UserModel.find()
     .then((users) => res.send(users))
-    .catch((err) => res.status(500).send({ message: `Server Error + ${err}` }));
+    .catch(() => next(new Error()));
 };
 
-const getUserById = (req, res) => {
+const getUserById = (req, res, next) => {
   const { id } = req.params;
 
   UserModel.findById(id)
-    .orFail(new Error('User not found'))
+    .orFail(() => next(new NotFoundError('Пользователь не найден')))
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.message === 'User not found') {
-        return res.status(404).send({ message: err.message });
-      }
       if (err.name === 'CastError') {
-        return res.status(400).send({ message: 'Invalid ID' });
+        return next(new BadRequestError('Невалидный ID'));
       }
-      return res.status(500).send({ message: 'Server Error' });
+      return next(new Error());
     });
 };
 
-const updateUserById = (req, res) => {
+const getUser = (req, res, next) => {
+  const id = req.user._id;
+  UserModel.findById(id)
+    .orFail(() => next(new NotFoundError('Пользователь не найден')))
+    .then((user) => res.send(user))
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return next(new BadRequestError('Невалидный ID'));
+      }
+      return next(new Error());
+    });
+};
+
+const updateUserById = (req, res, next) => {
   const id = req.user._id;
   const { name, about } = req.body;
   UserModel.findByIdAndUpdate(id, { name, about }, { new: true, runValidators: true })
-    .orFail(new Error('User not found'))
+    .orFail(() => next(new NotFoundError('Пользователь не найден')))
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.message === 'User not found') {
-        return res.status(404).send({ message: err.message });
-      }
       if (err.name === 'CastError') {
-        return res.status(400).send({ message: 'Invalid ID' });
+        return next(new BadRequestError('Невалидный ID'));
       }
       if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: err.message });
+        return next(new BadRequestError(err.message));
       }
-      return res.status(500).send({ message: 'Server Error' });
+      return next(new Error());
     });
 };
 
-const updateAvatar = (req, res) => {
+const updateAvatar = (req, res, next) => {
   const id = req.user._id;
   const { avatar } = req.body;
   UserModel.findByIdAndUpdate(id, { avatar }, { new: true, runValidators: true })
-    .orFail(new Error('User not found'))
+    .orFail(() => next(new NotFoundError('Пользователь не найден')))
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.message === 'User not found') {
-        return res.status(404).send({ message: err.message });
-      }
       if (err.name === 'CastError') {
-        return res.status(400).send({ message: 'Invalid ID' });
+        return next(new BadRequestError('Невалидный ID'));
       }
       if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: err.message });
+        return next(new BadRequestError(err.message));
       }
-      return res.status(500).send({ message: 'Server Error' });
+      return next(new Error());
     });
 };
 
 module.exports = {
-  createUser,
   getUsers,
+  getUser,
   getUserById,
   updateUserById,
   updateAvatar,
