@@ -3,7 +3,7 @@ const NotFoundError = require('../errors/not-found-error');
 const BadRequestError = require('../errors/bad-request-error');
 
 const getUsers = (req, res, next) => {
-  UserModel.find().select('-password')
+  UserModel.find()
     .then((users) => res.send(users))
     .catch(() => next(new Error()));
 };
@@ -11,7 +11,7 @@ const getUsers = (req, res, next) => {
 const getUserById = (req, res, next) => {
   const { id } = req.params;
 
-  UserModel.findById(id).select('-password')
+  UserModel.findById(id)
     .orFail(() => next(new NotFoundError('Пользователь не найден')))
     .then((user) => res.send(user))
     .catch((err) => {
@@ -24,7 +24,7 @@ const getUserById = (req, res, next) => {
 
 const getUser = (req, res, next) => {
   const id = req.user._id;
-  UserModel.findById(id).select('-password')
+  UserModel.findById(id)
     .orFail(() => next(new NotFoundError('Пользователь не найден')))
     .then((user) => res.send(user))
     .catch((err) => {
@@ -38,7 +38,7 @@ const getUser = (req, res, next) => {
 const updateUserById = (req, res, next) => {
   const id = req.user._id;
   const { name, about } = req.body;
-  UserModel.findByIdAndUpdate(id, { name, about }, { new: true, runValidators: true }).select('-password')
+  UserModel.findByIdAndUpdate(id, { name, about }, { new: true, runValidators: true })
     .orFail(() => next(new NotFoundError('Пользователь не найден')))
     .then((user) => res.send(user))
     .catch((err) => {
@@ -55,7 +55,7 @@ const updateUserById = (req, res, next) => {
 const updateAvatar = (req, res, next) => {
   const id = req.user._id;
   const { avatar } = req.body;
-  UserModel.findByIdAndUpdate(id, { avatar }, { new: true, runValidators: true }).select('-password')
+  UserModel.findByIdAndUpdate(id, { avatar }, { new: true, runValidators: true })
     .orFail(() => next(new NotFoundError('Пользователь не найден')))
     .then((user) => res.send(user))
     .catch((err) => {

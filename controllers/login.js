@@ -14,7 +14,7 @@ const login = (req, res, next) => {
   if (!email || !password) {
     return next(new BadRequestError('Email или пароль не могут быть пустыми'));
   }
-  UserModel.findOne({ email })
+  UserModel.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
         return next(new UnathorizedError('Такого пользователя не существует'));
@@ -42,7 +42,10 @@ const createUser = (req, res, next) => {
   }
   bcrypt.hash(userData.password, SALT_ROUNDS)
     .then((hash) => UserModel.create({ ...userData, password: hash }))
-    .then(() => res.status(201).send(userData))
+    .then((user) => {
+      const { password, ...newUser } = user._doc;
+      return res.status(201).send(newUser);
+    })
     .catch((err) => {
       if (err.code === 11000) {
         return next(new ConflictError('Такой пользователь уже существует'));
