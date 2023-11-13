@@ -42,7 +42,7 @@ const createUser = (req, res, next) => {
   }
   bcrypt.hash(userData.password, SALT_ROUNDS)
     .then((hash) => UserModel.create({ ...userData, password: hash }))
-    .then((user) => res.status(201).send(user))
+    .then(() => res.status(201).send(userData))
     .catch((err) => {
       if (err.code === 11000) {
         return next(new ConflictError('Такой пользователь уже существует'));
