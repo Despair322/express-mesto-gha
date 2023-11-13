@@ -14,7 +14,7 @@ const login = (req, res, next) => {
   if (!email || !password) {
     return next(new BadRequestError('Email или пароль не могут быть пустыми'));
   }
-  UserModel.findOne({ email }).select('+password')
+  UserModel.findOne({ email })
     .then((user) => {
       if (!user) {
         return next(new UnathorizedError('Такого пользователя не существует'));

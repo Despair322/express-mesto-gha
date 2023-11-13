@@ -13,8 +13,8 @@ router.get('/:id', celebrate({
 }), getUserById);
 router.patch('/me', celebrate({
   body: Joi.object().keys({
-    about: Joi.string().min(2).max(30),
-    name: Joi.string().min(2).max(30),
+    about: Joi.string().required().min(2).max(30),
+    name: Joi.string().required().min(2).max(30),
   }),
 }), updateUserById);
 router.patch('/me/avatar', celebrate({
