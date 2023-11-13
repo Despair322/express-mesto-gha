@@ -28,7 +28,7 @@ const login = (req, res, next) => {
           maxAge: 3600000,
           httpOnly: true,
           sameSite: true,
-        }).end();
+        }).send({ message: 'Успешно авторизован' });
       });
     })
     .catch(() => next(new Error()));
