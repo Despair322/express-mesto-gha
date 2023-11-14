@@ -19,7 +19,7 @@ router.patch('/me', celebrate({
 }), updateUserById);
 router.patch('/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().required().pattern(/^(https|http):\/\/(www.)?[-a-zA-Z0-9._~:/?#\[\]@!$&'()*+,;=]+\.[-a-zA-Z0-9._~:/?#\[\]@!$&'()*+,;=]#?/),
+    avatar: Joi.string().required().pattern(/^(https|http):\/\/(www.)?[-a-zA-Z0-9._~:/?#[\]@!$&'()*+,;=]+\.[-a-zA-Z0-9._~:/?#[\]@!$&'()*+,;=]#?/),
   }),
 }), updateAvatar);
 
